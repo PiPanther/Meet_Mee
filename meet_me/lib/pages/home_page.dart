@@ -42,6 +42,6 @@ class HomePageState extends State<HomePage> {
           ),
           centerTitle: true,
         ),
-        body: const ProfilePage());
+        body: ProfilePage());
   }
 }

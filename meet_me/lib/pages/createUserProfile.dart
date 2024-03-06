@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,18 @@ class CreateUserProfilePage extends StatefulWidget {
 }
 
 class Create_UserProfileStatePage extends State<CreateUserProfilePage> {
+  void getCurrentUser() {
+    User? cUser = FirebaseAuth.instance.currentUser;
+    if (cUser == null) {
+      print("Error fetching current user");
+    } else {
+      setState(() {
+        currentuser = cUser;
+      });
+    }
+  }
+
+  User? currentuser;
   String userId = Uuid().v4();
   String? dob = null;
   String username = "";
@@ -42,19 +55,21 @@ class Create_UserProfileStatePage extends State<CreateUserProfilePage> {
     setState(() {
       _isSaving = true;
     });
+    print(userId);
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
-        .collection("user_profile")
-        .add({
-      'userId': userId,
-      'username': username,
-      'birthday': dob,
-      'gender': _selectedGender,
-      'fullname': fullname,
-      'college': college,
-      'interests': _interests,
-      'about': aboutController.text.trim(),
+        .doc(username) // Use userId as the document ID
+        .set({
+      'user_profile': {
+        'userId': userId,
+        'username': username,
+        'birthday': dob,
+        'gender': _selectedGender,
+        'fullname': fullname,
+        'college': college,
+        'interests': _interests,
+        'about': aboutController.text.trim(),
+      },
     });
 
     setState(() {
